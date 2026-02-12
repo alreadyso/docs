@@ -1,0 +1,28 @@
+---
+title: "Sync session list"
+description: "Fetch sessions for incremental sync."
+---
+
+<ParamField path="method" type="GET">`/api/sessions/list`</ParamField>
+
+Returns minimal data for each session, optimized for incremental sync.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Query parameters
+
+<ParamField query="since" type="string">
+  ISO 8601 timestamp — only return sessions updated after this time
+</ParamField>
+<ParamField query="limit" type="number">
+  Max results (default 100, max 500)
+</ParamField>
+
+## Response
+
+<ResponseField name="sessions" type="SessionListItem[]" required>
+  Minimal session objects
+</ResponseField>
+<ResponseField name="sync_timestamp" type="string" required>
+  Timestamp for next sync
+</ResponseField>

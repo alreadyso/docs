@@ -1,0 +1,37 @@
+---
+title: "Create session"
+description: "Create a new session in the team."
+---
+
+<ParamField path="method" type="POST">`/api/sessions`</ParamField>
+
+Triggers `session.created` webhook.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="title" type="string" required>
+  Session title
+</ParamField>
+<ParamField body="description" type="string">
+  Session description
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  Assignee team_member ID
+</ParamField>
+<ParamField body="priority" type="number">
+  Priority 1-5 (1=highest)
+</ParamField>
+<ParamField body="labels" type="string[]">
+  Label names
+</ParamField>
+<ParamField body="metadata" type="object">
+  Arbitrary key-value metadata
+</ParamField>
+
+## Response
+
+<ResponseField name="session" type="Session" required>
+  The created session
+</ResponseField>

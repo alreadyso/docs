@@ -1,0 +1,43 @@
+---
+title: "Patch session data"
+description: "Update session with recording data after completion."
+---
+
+<ParamField path="method" type="PATCH">`/api/sessions/:id/data`</ParamField>
+
+Returns signed upload URLs for media files.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="duration_seconds" type="number">
+  Recording duration
+</ParamField>
+<ParamField body="title" type="string">
+  New title
+</ParamField>
+<ParamField body="source" type="string">
+  Source identifier
+</ParamField>
+<ParamField body="timeline" type="object[]">
+  Timeline events
+</ParamField>
+<ParamField body="notes" type="object">
+  Tiptap notes content
+</ParamField>
+<ParamField body="generated_notes" type="string">
+  AI-generated notes
+</ParamField>
+<ParamField body="files" type="object">
+  File flags and attachment list
+</ParamField>
+
+## Response
+
+<ResponseField name="session_id" type="string" required>
+  The session ID
+</ResponseField>
+<ResponseField name="upload_urls" type="object">
+  Signed URLs for file uploads
+</ResponseField>

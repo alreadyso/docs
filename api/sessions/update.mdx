@@ -1,0 +1,40 @@
+---
+title: "Update session"
+description: "Update session fields."
+---
+
+<ParamField path="method" type="PATCH">`/api/sessions/:id`</ParamField>
+
+Triggers `session.status_changed` and `session.assigned` webhooks when applicable.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="title" type="string">
+  New title
+</ParamField>
+<ParamField body="description" type="string">
+  New description
+</ParamField>
+<ParamField body="status" type="string">
+  New status (`todo`, `in_progress`, `needs_feedback`, `done`, `cancelled`)
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  New assignee team_member ID (null to unassign)
+</ParamField>
+<ParamField body="priority" type="number">
+  New priority 1-5
+</ParamField>
+<ParamField body="labels" type="string[]">
+  New labels
+</ParamField>
+<ParamField body="metadata" type="object">
+  New metadata (merged)
+</ParamField>
+
+## Response
+
+<ResponseField name="session" type="Session" required>
+  The updated session
+</ResponseField>

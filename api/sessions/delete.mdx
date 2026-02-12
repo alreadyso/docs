@@ -1,0 +1,16 @@
+---
+title: "Delete session"
+description: "Permanently delete a session and all associated data."
+---
+
+<ParamField path="method" type="DELETE">`/api/sessions/:id`</ParamField>
+
+Permanently deletes a session and all associated data (notes, timeline, comments, attachments, storage files).
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>

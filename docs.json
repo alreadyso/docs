@@ -24,7 +24,7 @@
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API",
         "groups": [
           {
             "group": "Getting started",
@@ -32,7 +32,20 @@
           },
           {
             "group": "Sessions",
-            "pages": ["api/sessions", "api/session-data"]
+            "pages": [
+              "api/sessions/list",
+              "api/sessions/create",
+              "api/sessions/get",
+              "api/sessions/update",
+              "api/sessions/delete",
+              "api/sessions/start",
+              "api/sessions/upload",
+              "api/sessions/confirm-upload",
+              "api/sessions/patch-data",
+              "api/sessions/sync",
+              "api/notes",
+              "api/comments"
+            ]
           },
           {
             "group": "Agents",
@@ -40,15 +53,11 @@
           },
           {
             "group": "Webhooks",
-            "pages": ["api/webhooks"]
+            "pages": ["webhooks/endpoints"]
           },
           {
             "group": "Teams",
             "pages": ["api/teams"]
-          },
-          {
-            "group": "Realtime",
-            "pages": ["api/realtime"]
           }
         ]
       },

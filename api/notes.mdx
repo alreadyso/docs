@@ -1,0 +1,55 @@
+---
+title: "Notes"
+description: "Get and update session notes."
+---
+
+## Get notes
+
+<ParamField path="method" type="GET">`/api/sessions/:id/notes`</ParamField>
+
+Get notes for a session, including Tiptap JSON content and AI-generated notes.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Response
+
+<ResponseField name="content" type="object">
+  Tiptap JSON content
+</ResponseField>
+<ResponseField name="generated_notes" type="string">
+  AI-generated notes
+</ResponseField>
+<ResponseField name="updated_at" type="string">
+  Last update timestamp
+</ResponseField>
+<ResponseField name="client_id" type="string">
+  Client ID of last editor
+</ResponseField>
+
+---
+
+## Update notes
+
+<ParamField path="method" type="PUT">`/api/sessions/:id/notes`</ParamField>
+
+Update notes for a session. Overwrites existing content. Auto-generates session title from notes if the current title is the default.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="content" type="object" required>
+  Tiptap JSON content
+</ParamField>
+<ParamField body="generated_notes" type="string">
+  AI-generated notes
+</ParamField>
+<ParamField body="client_id" type="string">
+  Client ID for conflict detection
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>

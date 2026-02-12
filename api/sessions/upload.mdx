@@ -1,0 +1,49 @@
+---
+title: "Upload session"
+description: "Upload a complete session with recording data."
+---
+
+<ParamField path="method" type="POST">`/api/sessions/upload`</ParamField>
+
+Creates or updates the session and returns signed upload URLs for media files.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="session_id" type="string">
+  Existing session ID to update (omit to create)
+</ParamField>
+<ParamField body="title" type="string" required>
+  Session title
+</ParamField>
+<ParamField body="description" type="string">
+  Session description
+</ParamField>
+<ParamField body="duration_seconds" type="number">
+  Recording duration
+</ParamField>
+<ParamField body="timeline" type="object[]">
+  Timeline events
+</ParamField>
+<ParamField body="notes" type="object">
+  Tiptap notes content
+</ParamField>
+<ParamField body="generated_notes" type="string">
+  AI-generated notes
+</ParamField>
+<ParamField body="files" type="object">
+  File flags (`has_video`, `has_audio`, `has_thumbnail`, `attachments`)
+</ParamField>
+
+## Response
+
+<ResponseField name="session_id" type="string" required>
+  The session ID
+</ResponseField>
+<ResponseField name="created" type="boolean" required>
+  Whether a new session was created
+</ResponseField>
+<ResponseField name="upload_urls" type="object">
+  Signed URLs for file upload
+</ResponseField>

@@ -1,0 +1,28 @@
+---
+title: "Start session"
+description: "Create a session when recording begins."
+---
+
+<ParamField path="method" type="POST">`/api/sessions/start`</ParamField>
+
+Idempotent — returns 200 if a session with the provided ID already exists.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="id" type="string">
+  Client-provided session ID (for idempotency)
+</ParamField>
+<ParamField body="title" type="string">
+  Initial title
+</ParamField>
+<ParamField body="source" type="string">
+  Source identifier (e.g. `desktop`, `web`)
+</ParamField>
+
+## Response
+
+<ResponseField name="session_id" type="string" required>
+  The session ID
+</ResponseField>

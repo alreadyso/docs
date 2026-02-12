@@ -1,0 +1,22 @@
+---
+title: "Get session"
+description: "Get session details by ID."
+---
+
+<ParamField path="method" type="GET">`/api/sessions/:id`</ParamField>
+
+Pass `full=true` to include notes, timeline, and attachments.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Query parameters
+
+<ParamField query="full" type="boolean">
+  Include notes, timeline, and attachments
+</ParamField>
+
+## Response
+
+<ResponseField name="session" type="Session" required>
+  The session object (with optional nested data)
+</ResponseField>

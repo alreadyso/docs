@@ -1,0 +1,40 @@
+---
+title: "Comments"
+description: "List and add comments on sessions."
+---
+
+## List comments
+
+<ParamField path="method" type="GET">`/api/sessions/:id/comments`</ParamField>
+
+List all comments on a session, ordered by creation time.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Response
+
+<ResponseField name="comments" type="Comment[]" required>
+  Array of comment objects
+</ResponseField>
+
+---
+
+## Add comment
+
+<ParamField path="method" type="POST">`/api/sessions/:id/comments`</ParamField>
+
+Add a comment to a session. Triggers `session.commented` webhook.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="content" type="string" required>
+  Comment text
+</ParamField>
+
+### Response
+
+<ResponseField name="comment" type="Comment" required>
+  The created comment
+</ResponseField>

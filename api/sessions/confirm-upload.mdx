@@ -1,0 +1,46 @@
+---
+title: "Confirm upload"
+description: "Confirm that files have been uploaded to storage."
+---
+
+<ParamField path="method" type="POST">`/api/sessions/confirm`</ParamField>
+
+Confirm that files have been uploaded to storage after using signed URLs from [upload session](/api/sessions/upload).
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+## Request body
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+<ParamField body="video_uploaded" type="boolean">
+  Video file was uploaded
+</ParamField>
+<ParamField body="audio_uploaded" type="boolean">
+  Audio file was uploaded
+</ParamField>
+<ParamField body="thumbnail_uploaded" type="boolean">
+  Thumbnail was uploaded
+</ParamField>
+<ParamField body="attachments" type="object[]">
+  Attachment metadata (filename, type, content_type, size_bytes)
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean" required>
+  Confirmation result
+</ResponseField>
+<ResponseField name="video_url" type="string">
+  Public video URL
+</ResponseField>
+<ResponseField name="audio_url" type="string">
+  Public audio URL
+</ResponseField>
+<ResponseField name="thumbnail_url" type="string">
+  Public thumbnail URL
+</ResponseField>
+<ResponseField name="attachments" type="object[]">
+  Confirmed attachment records
+</ResponseField>
