@@ -1,0 +1,283 @@
+---
+title: "Sessions"
+description: "Create, read, update, delete, and upload sessions."
+---
+
+## List sessions
+
+<ParamField path="method" type="GET">`/api/sessions`</ParamField>
+
+List sessions with filters, scoped to the authenticated team.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Query parameters
+
+<ParamField query="status" type="string">
+  Filter by status (`todo`, `in_progress`, `needs_feedback`, `done`, `cancelled`)
+</ParamField>
+<ParamField query="assignee_id" type="string">
+  Filter by assignee team_member ID
+</ParamField>
+<ParamField query="created_by" type="string">
+  Filter by creator ID
+</ParamField>
+<ParamField query="labels[]" type="string">
+  Filter by label names
+</ParamField>
+<ParamField query="q" type="string">
+  Search title and description
+</ParamField>
+<ParamField query="limit" type="number">
+  Max results (default 50, max 100)
+</ParamField>
+<ParamField query="offset" type="number">
+  Pagination offset
+</ParamField>
+
+### Response
+
+<ResponseField name="sessions" type="Session[]" required>
+  Array of session objects
+</ResponseField>
+<ResponseField name="total" type="number" required>
+  Total count matching filters
+</ResponseField>
+
+---
+
+## Create session
+
+<ParamField path="method" type="POST">`/api/sessions`</ParamField>
+
+Create a new session in the team. Triggers `session.created` webhook.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="title" type="string" required>
+  Session title
+</ParamField>
+<ParamField body="description" type="string">
+  Session description
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  Assignee team_member ID
+</ParamField>
+<ParamField body="priority" type="number">
+  Priority 1-5 (1=highest)
+</ParamField>
+<ParamField body="labels" type="string[]">
+  Label names
+</ParamField>
+<ParamField body="metadata" type="object">
+  Arbitrary key-value metadata
+</ParamField>
+
+### Response
+
+<ResponseField name="session" type="Session" required>
+  The created session
+</ResponseField>
+
+---
+
+## Get session
+
+<ParamField path="method" type="GET">`/api/sessions/:id`</ParamField>
+
+Get session details. Pass `full=true` to include notes, timeline, and attachments.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Query parameters
+
+<ParamField query="full" type="boolean">
+  Include notes, timeline, and attachments
+</ParamField>
+
+### Response
+
+<ResponseField name="session" type="Session" required>
+  The session object (with optional nested data)
+</ResponseField>
+
+---
+
+## Update session
+
+<ParamField path="method" type="PATCH">`/api/sessions/:id`</ParamField>
+
+Update session fields. Triggers `session.status_changed` and `session.assigned` webhooks when applicable.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="title" type="string">
+  New title
+</ParamField>
+<ParamField body="description" type="string">
+  New description
+</ParamField>
+<ParamField body="status" type="string">
+  New status (`todo`, `in_progress`, `needs_feedback`, `done`, `cancelled`)
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  New assignee team_member ID (null to unassign)
+</ParamField>
+<ParamField body="priority" type="number">
+  New priority 1-5
+</ParamField>
+<ParamField body="labels" type="string[]">
+  New labels
+</ParamField>
+<ParamField body="metadata" type="object">
+  New metadata (merged)
+</ParamField>
+
+### Response
+
+<ResponseField name="session" type="Session" required>
+  The updated session
+</ResponseField>
+
+---
+
+## Delete session
+
+<ParamField path="method" type="DELETE">`/api/sessions/:id`</ParamField>
+
+Permanently delete a session and all associated data (notes, timeline, comments, attachments, storage files).
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+
+---
+
+## Start session
+
+<ParamField path="method" type="POST">`/api/sessions/start`</ParamField>
+
+Create a session when recording begins. Idempotent — returns 200 if session with provided ID already exists.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="id" type="string">
+  Client-provided session ID (for idempotency)
+</ParamField>
+<ParamField body="title" type="string">
+  Initial title
+</ParamField>
+<ParamField body="source" type="string">
+  Source identifier (e.g. `desktop`, `web`)
+</ParamField>
+
+### Response
+
+<ResponseField name="session_id" type="string" required>
+  The session ID
+</ResponseField>
+
+---
+
+## Upload session
+
+<ParamField path="method" type="POST">`/api/sessions/upload`</ParamField>
+
+Upload a complete session with recording data. Creates or updates the session and returns signed upload URLs for media files.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="session_id" type="string">
+  Existing session ID to update (omit to create)
+</ParamField>
+<ParamField body="title" type="string" required>
+  Session title
+</ParamField>
+<ParamField body="description" type="string">
+  Session description
+</ParamField>
+<ParamField body="duration_seconds" type="number">
+  Recording duration
+</ParamField>
+<ParamField body="timeline" type="object[]">
+  Timeline events
+</ParamField>
+<ParamField body="notes" type="object">
+  Tiptap notes content
+</ParamField>
+<ParamField body="generated_notes" type="string">
+  AI-generated notes
+</ParamField>
+<ParamField body="files" type="object">
+  File flags (`has_video`, `has_audio`, `has_thumbnail`, `attachments`)
+</ParamField>
+
+### Response
+
+<ResponseField name="session_id" type="string" required>
+  The session ID
+</ResponseField>
+<ResponseField name="created" type="boolean" required>
+  Whether a new session was created
+</ResponseField>
+<ResponseField name="upload_urls" type="object">
+  Signed URLs for file upload
+</ResponseField>
+
+---
+
+## Confirm upload
+
+<ParamField path="method" type="POST">`/api/sessions/confirm`</ParamField>
+
+Confirm that files have been uploaded to storage after using signed URLs.
+
+**Auth:** Agent key or User JWT + X-Team-Id
+
+### Request body
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+<ParamField body="video_uploaded" type="boolean">
+  Video file was uploaded
+</ParamField>
+<ParamField body="audio_uploaded" type="boolean">
+  Audio file was uploaded
+</ParamField>
+<ParamField body="thumbnail_uploaded" type="boolean">
+  Thumbnail was uploaded
+</ParamField>
+<ParamField body="attachments" type="object[]">
+  Attachment metadata (filename, type, content_type, size_bytes)
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Confirmation result
+</ResponseField>
+<ResponseField name="video_url" type="string">
+  Public video URL
+</ResponseField>
+<ResponseField name="audio_url" type="string">
+  Public audio URL
+</ResponseField>
+<ResponseField name="thumbnail_url" type="string">
+  Public thumbnail URL
+</ResponseField>
+<ResponseField name="attachments" type="object[]">
+  Confirmed attachment records
+</ResponseField>

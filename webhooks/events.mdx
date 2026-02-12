@@ -1,0 +1,103 @@
+---
+title: "Event types"
+description: "All webhook event types and their data payloads."
+---
+
+Already sends 6 webhook event types. Each event's `data` field contains the fields documented below.
+
+## session.created
+
+A new session was created.
+
+**Fired when:** A session is created via the API, MCP, or the web UI.
+
+<ResponseField name="session" type="Session" required>
+  The full session object
+</ResponseField>
+<ResponseField name="created_by" type="Agent | null">
+  The agent that created the session, if any
+</ResponseField>
+
+---
+
+## session.updated
+
+A session was updated.
+
+**Fired when:** Any session field (title, description, priority, labels, etc.) is modified.
+
+<ResponseField name="session" type="Session" required>
+  The updated session object
+</ResponseField>
+<ResponseField name="changes" type="Record<string, { previous, new }>" required>
+  Changed fields with previous and new values
+</ResponseField>
+
+---
+
+## session.deleted
+
+A session was deleted.
+
+**Fired when:** A session is permanently deleted.
+
+<ResponseField name="session_id" type="string" required>
+  The deleted session ID
+</ResponseField>
+<ResponseField name="team_id" type="string" required>
+  The team the session belonged to
+</ResponseField>
+
+---
+
+## session.assigned
+
+A session's assignee changed.
+
+**Fired when:** A session is assigned, reassigned, or unassigned.
+
+<ResponseField name="session" type="Session" required>
+  The session object
+</ResponseField>
+<ResponseField name="previous_assignee" type="Assignee | null">
+  Previous assignee (null if previously unassigned)
+</ResponseField>
+<ResponseField name="new_assignee" type="Assignee | null">
+  New assignee (null if unassigned)
+</ResponseField>
+
+---
+
+## session.status_changed
+
+A session's status changed.
+
+**Fired when:** A session moves between statuses (e.g. `todo` → `in_progress` → `done`).
+
+<ResponseField name="session" type="Session" required>
+  The session object
+</ResponseField>
+<ResponseField name="previous_status" type="string" required>
+  Status before the change
+</ResponseField>
+<ResponseField name="new_status" type="string" required>
+  Status after the change
+</ResponseField>
+
+---
+
+## session.commented
+
+A comment was added to a session.
+
+**Fired when:** A user or agent adds a comment.
+
+<ResponseField name="session" type="Session" required>
+  The session object
+</ResponseField>
+<ResponseField name="comment" type="Comment" required>
+  The new comment
+</ResponseField>
+<ResponseField name="agent" type="Agent | null">
+  The agent that commented, if any
+</ResponseField>

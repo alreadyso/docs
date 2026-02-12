@@ -1,0 +1,71 @@
+---
+title: "Overview"
+description: "Connect AI clients to Already using the Model Context Protocol."
+---
+
+Already exposes 10 tools via the Model Context Protocol (MCP). Any MCP-compatible AI client (Claude Desktop, Cursor, Windsurf, etc.) can connect and manage sessions, comments, and notes.
+
+## Connection
+
+Connect using the streamable HTTP transport.
+
+```
+https://already.so/mcp-server
+```
+
+Configure your MCP client to connect to this URL with the authentication headers below.
+
+## Authentication
+
+Two authentication methods are supported.
+
+### Personal API key (PAK)
+
+Generated in your account settings. Scoped to your user identity.
+
+```bash
+Authorization: Bearer pak_xxxxxxxxxxxxx
+X-Team-Id: <team-uuid>
+```
+
+### Agent API key
+
+Each registered agent has a unique key. Scoped to the agent's team.
+
+```bash
+Authorization: Bearer ak_xxxxxxxxxxxxx
+X-Team-Id: <team-uuid>
+```
+
+## Configuration example
+
+Add this to `~/.claude.json` or your project's `.claude.json` to connect Claude Code:
+
+```json
+{
+  "mcpServers": {
+    "already": {
+      "type": "sse",
+      "url": "https://already.so/mcp-server",
+      "headers": {
+        "Authorization": "Bearer <your-pak-or-api-key>",
+        "X-Team-Id": "<your-team-uuid>"
+      }
+    }
+  }
+}
+```
+
+Replace the key and team ID with values from your Already account settings.
+
+## Available tools
+
+Already provides 10 MCP tools across three categories:
+
+| Category | Tools |
+| --- | --- |
+| Sessions | `already_list_sessions`, `already_get_session`, `already_create_session`, `already_update_session`, `already_delete_session`, `already_get_assigned` |
+| Comments | `already_get_comments`, `already_add_comment` |
+| Notes | `already_get_notes`, `already_update_notes` |
+
+See the [tools reference](/mcp/tools) for parameters and return types.

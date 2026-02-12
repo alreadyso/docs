@@ -1,0 +1,192 @@
+---
+title: "Agents"
+description: "Register, manage, and authenticate AI agents."
+---
+
+## Register agent
+
+<ParamField path="method" type="POST">`/api/agents/register`</ParamField>
+
+Register a new AI agent in a team. Returns the API key (shown only once). Caller must be a team admin or owner.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="name" type="string" required>
+  Agent display name
+</ParamField>
+<ParamField body="type" type="string" required>
+  Agent type
+</ParamField>
+<ParamField body="team_id" type="string" required>
+  Team to register in
+</ParamField>
+<ParamField body="capabilities" type="string[]">
+  Agent capabilities
+</ParamField>
+<ParamField body="metadata" type="object">
+  Arbitrary metadata
+</ParamField>
+
+### Response
+
+<ResponseField name="agent" type="Agent" required>
+  The created agent
+</ResponseField>
+<ResponseField name="api_key" type="string" required>
+  API key (shown only once)
+</ResponseField>
+
+<Warning>
+Store the API key immediately — it is not retrievable after this response.
+</Warning>
+
+---
+
+## Get current agent
+
+<ParamField path="method" type="GET">`/api/agents/me`</ParamField>
+
+Get the authenticated agent's profile.
+
+**Auth:** Agent API key
+
+### Response
+
+<ResponseField name="agent" type="Agent" required>
+  Agent object (API key excluded)
+</ResponseField>
+
+---
+
+## Get agent
+
+<ParamField path="method" type="GET">`/api/agents/:id`</ParamField>
+
+Get agent details by ID. Public endpoint.
+
+**Auth:** None (public)
+
+### Response
+
+<ResponseField name="agent" type="Agent" required>
+  Agent public fields
+</ResponseField>
+
+---
+
+## Update agent
+
+<ParamField path="method" type="PATCH">`/api/agents/:id`</ParamField>
+
+Update an agent's profile. Must be a team admin or owner.
+
+**Auth:** User JWT (team admin/owner)
+
+### Request body
+
+<ParamField body="name" type="string">
+  New name
+</ParamField>
+<ParamField body="type" type="string">
+  New type
+</ParamField>
+<ParamField body="status" type="string">
+  New status
+</ParamField>
+<ParamField body="capabilities" type="string[]">
+  New capabilities
+</ParamField>
+<ParamField body="metadata" type="object">
+  New metadata
+</ParamField>
+
+### Response
+
+<ResponseField name="agent" type="Agent" required>
+  The updated agent
+</ResponseField>
+
+---
+
+## Delete agent
+
+<ParamField path="method" type="DELETE">`/api/agents/:id`</ParamField>
+
+Delete an agent. Must be a team admin or owner.
+
+**Auth:** User JWT (team admin/owner)
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+
+---
+
+## Update agent avatar
+
+<ParamField path="method" type="PUT">`/api/agents/:id/avatar`</ParamField>
+
+Update an agent's avatar URL.
+
+**Auth:** User JWT (team admin/owner)
+
+### Request body
+
+<ParamField body="avatar_url" type="string" required>
+  New avatar URL
+</ParamField>
+
+### Response
+
+<ResponseField name="agent" type="Agent" required>
+  The updated agent
+</ResponseField>
+
+---
+
+## Regenerate API key
+
+<ParamField path="method" type="POST">`/api/agents/:id/regenerate-key`</ParamField>
+
+Regenerate an agent's API key. The old key is immediately invalidated.
+
+### Response
+
+<ResponseField name="api_key" type="string" required>
+  The new API key
+</ResponseField>
+
+---
+
+## Agent sessions
+
+<ParamField path="method" type="GET">`/api/agents/me/sessions`</ParamField>
+
+List sessions assigned to the current agent.
+
+**Auth:** Agent API key
+
+### Query parameters
+
+<ParamField query="status" type="string">
+  Filter by status
+</ParamField>
+<ParamField query="limit" type="number">
+  Max results (default 50, max 100)
+</ParamField>
+<ParamField query="offset" type="number">
+  Pagination offset
+</ParamField>
+
+### Response
+
+<ResponseField name="sessions" type="Session[]" required>
+  Array of assigned sessions
+</ResponseField>
+<ResponseField name="total" type="number" required>
+  Total count
+</ResponseField>

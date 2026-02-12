@@ -1,0 +1,90 @@
+---
+title: "Overview"
+description: "Receive real-time HTTP notifications when events happen in your team."
+---
+
+Webhooks let you receive real-time HTTP notifications when events happen in your team — sessions created, status changes, comments, and more. Configure webhook endpoints per team, and Already will POST signed JSON payloads to your URL.
+
+## Setup
+
+Use the [webhook API endpoints](/api/webhooks) to register a webhook URL for your team. You can subscribe to specific event types or receive all events.
+
+```bash
+POST /api/webhooks
+```
+
+```json
+{
+  "name": "My webhook",
+  "url": "https://example.com/webhook",
+  "event_types": ["session.created", "session.status_changed"],
+  "secret": "your-signing-secret"
+}
+```
+
+## Payload structure
+
+Every webhook delivery has the same top-level structure.
+
+<ResponseField name="event" type="string" required>
+  The event type (e.g. `session.created`)
+</ResponseField>
+<ResponseField name="timestamp" type="string" required>
+  ISO 8601 timestamp of when the event occurred
+</ResponseField>
+<ResponseField name="delivery_id" type="string" required>
+  Unique ID for this delivery (UUID)
+</ResponseField>
+<ResponseField name="data" type="object" required>
+  Event-specific payload (see [event types](/webhooks/events))
+</ResponseField>
+
+```json
+{
+  "event": "session.created",
+  "timestamp": "2026-02-09T12:00:00.000Z",
+  "delivery_id": "550e8400-e29b-41d4-a716-446655440000",
+  "data": {
+    "session": { "..." },
+    "created_by": null
+  }
+}
+```
+
+## Signature verification
+
+Each delivery includes an HMAC-SHA256 signature computed with your webhook secret.
+
+| Header | Description |
+| --- | --- |
+| `X-Webhook-Signature` | `sha256=<hex-digest>` — HMAC-SHA256 of the raw request body using your secret |
+| `X-Webhook-Timestamp` | Unix timestamp (seconds) of when the payload was signed |
+
+### Verification steps
+
+<Steps>
+  <Step title="Read the raw body">
+    Read the raw request body (do not parse JSON first).
+  </Step>
+  <Step title="Compute HMAC">
+    Compute HMAC-SHA256 of the body using your webhook secret.
+  </Step>
+  <Step title="Compare signatures">
+    Compare with the signature in `X-Webhook-Signature` (after stripping the `sha256=` prefix).
+  </Step>
+  <Step title="Check timestamp">
+    Verify that `X-Webhook-Timestamp` is within 5 minutes of the current time.
+  </Step>
+</Steps>
+
+## Delivery and retries
+
+Already expects a `2xx` response within **30 seconds**.
+
+Failed deliveries are retried up to **3 times** with exponential backoff:
+
+| Retry | Delay |
+| --- | --- |
+| 1 | 1 second |
+| 2 | 5 seconds |
+| 3 | 30 seconds |

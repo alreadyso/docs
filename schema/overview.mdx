@@ -1,0 +1,265 @@
+---
+title: "Session schema"
+description: "Already Session Schema v1.0 — the canonical format for sessions, timeline events, media, comments, and notes."
+---
+
+The Already Session Schema defines the canonical format for sessions. A session document has 6 top-level fields:
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `version` | Yes | Schema version (`"1.0"`) |
+| `session` | Yes | Session metadata |
+| `timeline` | Yes | Capture events |
+| `media` | No | Media files |
+| `comments` | No | Discussion |
+| `notes` | No | Rich text notes |
+
+## Session metadata
+
+Session identity, timestamps, recording configuration, environment, and project management.
+
+<ResponseField name="id" type="string (uuid)" required>
+  Session identifier
+</ResponseField>
+<ResponseField name="createdAt" type="string (date-time)" required>
+  Creation timestamp
+</ResponseField>
+<ResponseField name="endedAt" type="string (date-time)">
+  End timestamp
+</ResponseField>
+<ResponseField name="duration" type="number">
+  Duration in seconds
+</ResponseField>
+<ResponseField name="title" type="string">
+  Session title
+</ResponseField>
+<ResponseField name="description" type="string">
+  Session description
+</ResponseField>
+<ResponseField name="status" type="string">
+  One of: `in_session`, `uploading`, `todo`, `in_progress`, `needs_feedback`, `done`, `cancelled`
+</ResponseField>
+<ResponseField name="assigneeId" type="string">
+  Assignee identifier
+</ResponseField>
+<ResponseField name="assigneeUsername" type="string">
+  Assignee username
+</ResponseField>
+<ResponseField name="labels" type="string[]">
+  Label names
+</ResponseField>
+<ResponseField name="priority" type="integer">
+  1 (highest) to 5 (lowest)
+</ResponseField>
+<ResponseField name="platform" type="string">
+  One of: `electron`, `web`, `ios`, `android`
+</ResponseField>
+<ResponseField name="platformVersion" type="string">
+  Platform version string
+</ResponseField>
+<ResponseField name="hasVideo" type="boolean">
+  Whether session includes video
+</ResponseField>
+<ResponseField name="hasAudio" type="boolean">
+  Whether session includes audio
+</ResponseField>
+<ResponseField name="videoCodec" type="string">
+  One of: `h264`, `h265`, `vp9`, `av1`
+</ResponseField>
+<ResponseField name="resolutionWidth" type="integer">
+  Video width in pixels
+</ResponseField>
+<ResponseField name="resolutionHeight" type="integer">
+  Video height in pixels
+</ResponseField>
+<ResponseField name="fps" type="number">
+  Frames per second
+</ResponseField>
+<ResponseField name="os" type="string">
+  Operating system (e.g. `macOS`, `Windows`, `iOS`, `Android`)
+</ResponseField>
+<ResponseField name="osVersion" type="string">
+  OS version string
+</ResponseField>
+<ResponseField name="device" type="string">
+  Device name (e.g. `MacBook Pro 16-inch`, `iPhone 15 Pro`)
+</ResponseField>
+<ResponseField name="screenWidth" type="integer">
+  Screen width in pixels
+</ResponseField>
+<ResponseField name="screenHeight" type="integer">
+  Screen height in pixels
+</ResponseField>
+<ResponseField name="screenScale" type="number">
+  Screen scale factor (e.g. 2 for Retina)
+</ResponseField>
+<ResponseField name="teamId" type="string">
+  Team identifier
+</ResponseField>
+<ResponseField name="createdBy" type="string">
+  Creator identifier
+</ResponseField>
+
+## Timeline events
+
+Capture events recorded during the session, sorted by timestamp. Every event has `timestamp` + `type`. Other fields depend on the event type.
+
+### Event types
+
+```
+window_focus, page_navigation, screen_change, app_state,
+keystroke, text_typed, text_selected,
+mouse_click, click, touch,
+snapshot, annotation,
+transcription,
+recording_started, recording_ended,
+console_error, network_request
+```
+
+### Common fields
+
+These fields are present on most events:
+
+<ResponseField name="timestamp" type="number" required>
+  Seconds from session start
+</ResponseField>
+<ResponseField name="type" type="string" required>
+  Event type (see list above)
+</ResponseField>
+<ResponseField name="text" type="string">
+  Text content. Used by: `text_typed`, `transcription`, `annotation`, `console_error`
+</ResponseField>
+<ResponseField name="x" type="number">
+  X coordinate. Used by: `mouse_click`, `click`, `touch`, `annotation`
+</ResponseField>
+<ResponseField name="y" type="number">
+  Y coordinate. Used by: `mouse_click`, `click`, `touch`, `annotation`
+</ResponseField>
+<ResponseField name="url" type="string">
+  URL. Used by: `page_navigation`, `click`, `annotation`, `console_error`, `network_request`
+</ResponseField>
+<ResponseField name="mediaRef" type="string">
+  ID of a media item. Used by: `snapshot`, `annotation`
+</ResponseField>
+
+### Type-specific fields
+
+<Accordion title="Window and navigation fields">
+  <ResponseField name="appName" type="string">Application name (`window_focus`)</ResponseField>
+  <ResponseField name="windowTitle" type="string">Window title (`window_focus`)</ResponseField>
+  <ResponseField name="bundleId" type="string">macOS bundle ID or Windows process name (`window_focus`)</ResponseField>
+  <ResponseField name="display" type="integer">Display index (`window_focus`)</ResponseField>
+  <ResponseField name="title" type="string">Page title (`page_navigation`)</ResponseField>
+  <ResponseField name="referrer" type="string">Referrer URL (`page_navigation`)</ResponseField>
+  <ResponseField name="screenName" type="string">Current screen/activity (`screen_change`)</ResponseField>
+  <ResponseField name="previousScreen" type="string">Previous screen (`screen_change`)</ResponseField>
+  <ResponseField name="state" type="string">`foreground` or `background` (`app_state`)</ResponseField>
+</Accordion>
+
+<Accordion title="Input fields">
+  <ResponseField name="key" type="string">Key identifier (`keystroke`)</ResponseField>
+  <ResponseField name="button" type="string">`left`, `right`, or `middle` (`mouse_click`)</ResponseField>
+  <ResponseField name="selectedText" type="string">Text highlighted by the user (`text_selected`)</ResponseField>
+</Accordion>
+
+<Accordion title="Click and element fields">
+  <ResponseField name="elementPath" type="string">CSS selector path (`click`, `annotation`)</ResponseField>
+  <ResponseField name="element" type="string">HTML tag name (`click`, `annotation`)</ResponseField>
+  <ResponseField name="elementText" type="string">Visible text of the element (`click`, `annotation`)</ResponseField>
+  <ResponseField name="boundingBox" type="object">Element bounding box with `x`, `y`, `width`, `height` (`click`, `annotation`)</ResponseField>
+  <ResponseField name="reactComponents" type="string">React component tree (`click`, `annotation`)</ResponseField>
+  <ResponseField name="cssClasses" type="string">Element class list (`click`, `annotation`)</ResponseField>
+  <ResponseField name="accessibility" type="string">ARIA info (`click`, `annotation`)</ResponseField>
+  <ResponseField name="nearbyText" type="string">Text around the element (`click`, `annotation`)</ResponseField>
+  <ResponseField name="isFixed" type="boolean">Fixed/sticky positioning (`click`, `annotation`)</ResponseField>
+</Accordion>
+
+<Accordion title="Touch fields">
+  <ResponseField name="gesture" type="string">One of: `tap`, `double_tap`, `long_press`, `swipe`, `pinch`, `rotate` (`touch`)</ResponseField>
+  <ResponseField name="points" type="number[][]">Multi-touch points as `[[x,y], ...]` (`touch`)</ResponseField>
+</Accordion>
+
+<Accordion title="Transcription fields">
+  <ResponseField name="start" type="number">Audio start time in seconds (`transcription`)</ResponseField>
+  <ResponseField name="end" type="number">Audio end time in seconds (`transcription`)</ResponseField>
+</Accordion>
+
+<Accordion title="Error and network fields">
+  <ResponseField name="level" type="string">`error`, `warn`, or `info` (`console_error`)</ResponseField>
+  <ResponseField name="stack" type="string">Stack trace (`console_error`)</ResponseField>
+  <ResponseField name="method" type="string">HTTP method (`network_request`)</ResponseField>
+  <ResponseField name="status" type="integer">HTTP status code (`network_request`)</ResponseField>
+  <ResponseField name="duration" type="number">Request duration in ms (`network_request`)</ResponseField>
+</Accordion>
+
+## Media
+
+Media files (video, audio, images) associated with the session. Referenced by timeline events via `mediaRef`.
+
+<ResponseField name="id" type="string" required>
+  Media identifier, referenced by timeline events
+</ResponseField>
+<ResponseField name="type" type="string" required>
+  One of: `video`, `audio`, `image`
+</ResponseField>
+<ResponseField name="filename" type="string" required>
+  File name
+</ResponseField>
+<ResponseField name="category" type="string">
+  One of: `recording`, `snapshot`, `annotation`, `smart`, `pasted`, `converted`
+</ResponseField>
+<ResponseField name="mimeType" type="string">
+  MIME type
+</ResponseField>
+<ResponseField name="cloudUrl" type="string">
+  Cloud storage URL
+</ResponseField>
+<ResponseField name="width" type="integer">
+  Width in pixels
+</ResponseField>
+<ResponseField name="height" type="integer">
+  Height in pixels
+</ResponseField>
+<ResponseField name="duration" type="number">
+  Duration in seconds (video/audio)
+</ResponseField>
+<ResponseField name="sizeBytes" type="integer">
+  File size in bytes
+</ResponseField>
+<ResponseField name="createdAt" type="string (date-time)">
+  Creation timestamp
+</ResponseField>
+
+## Comments
+
+Threaded discussion on the session.
+
+<ResponseField name="id" type="string" required>
+  Comment identifier
+</ResponseField>
+<ResponseField name="createdAt" type="string (date-time)" required>
+  Creation timestamp
+</ResponseField>
+<ResponseField name="authorId" type="string" required>
+  Author identifier
+</ResponseField>
+<ResponseField name="body" type="string" required>
+  Comment text
+</ResponseField>
+<ResponseField name="updatedAt" type="string (date-time)">
+  Last update timestamp
+</ResponseField>
+<ResponseField name="authorUsername" type="string">
+  Author username
+</ResponseField>
+<ResponseField name="parentId" type="string">
+  Parent comment ID for threaded replies
+</ResponseField>
+
+## Notes
+
+Rich-text notes. Content is an array of nodes (paragraphs, headings, images, etc.) in Tiptap JSON format.
+
+<ResponseField name="content" type="object[]">
+  Array of content nodes, each with a required `type` field (e.g. `paragraph`, `heading`, `image`)
+</ResponseField>

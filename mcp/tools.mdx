@@ -1,0 +1,190 @@
+---
+title: "Tools reference"
+description: "Parameter and return type reference for all 10 Already MCP tools."
+---
+
+## Session tools
+
+### already_list_sessions
+
+List sessions (tasks/issues) for the team. Returns session metadata but not full details — use `already_get_session` for notes, comments, and attachments.
+
+#### Parameters
+
+<ParamField body="status" type="string">
+  Filter by status: `todo`, `in_progress`, `needs_feedback`, `done`, etc.
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  Filter by assignee team_member ID
+</ParamField>
+<ParamField body="q" type="string">
+  Search query for title/description
+</ParamField>
+<ParamField body="labels" type="string">
+  Comma-separated label names
+</ParamField>
+<ParamField body="limit" type="number">
+  Max results (default 50)
+</ParamField>
+
+**Returns:** `{ sessions: Session[], total: number }`
+
+---
+
+### already_get_session
+
+Get the full context of a session — metadata, notes, comments, and attachments. This is the primary tool for understanding what needs to be done.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+
+**Returns:** `{ session, notes, comments, attachments }`
+
+---
+
+### already_create_session
+
+Create a new session (task/issue) in the team. Triggers `session.created` webhook.
+
+#### Parameters
+
+<ParamField body="title" type="string" required>
+  Session title
+</ParamField>
+<ParamField body="description" type="string">
+  Session description
+</ParamField>
+<ParamField body="priority" type="number">
+  Priority 1-5 (1=highest, default 3)
+</ParamField>
+<ParamField body="labels" type="string">
+  Comma-separated labels
+</ParamField>
+
+**Returns:** `{ session: Session }`
+
+---
+
+### already_update_session
+
+Update a session's status, assignee, priority, labels, or description. Status changes trigger `session.status_changed` webhook.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID to update
+</ParamField>
+<ParamField body="status" type="string">
+  New status: `todo`, `in_progress`, `needs_feedback`, `done`, `cancelled`
+</ParamField>
+<ParamField body="assignee_id" type="string">
+  New assignee team_member ID (empty string to unassign)
+</ParamField>
+<ParamField body="priority" type="number">
+  New priority 1-5
+</ParamField>
+<ParamField body="labels" type="string">
+  New comma-separated labels
+</ParamField>
+<ParamField body="description" type="string">
+  New description
+</ParamField>
+
+**Returns:** `{ session: Session }`
+
+---
+
+### already_delete_session
+
+Permanently delete a session and all associated data (comments, notes, attachments, storage files). Cannot be undone.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID to delete
+</ParamField>
+
+**Returns:** `{ success: true, deleted: string }`
+
+---
+
+### already_get_assigned
+
+Get sessions assigned to the current user/agent. Returns only sessions where you are the assignee.
+
+#### Parameters
+
+<ParamField body="status" type="string">
+  Filter by status
+</ParamField>
+
+**Returns:** `{ sessions: Session[] }`
+
+---
+
+## Comment tools
+
+### already_get_comments
+
+List comments on a session. Returns the full discussion thread ordered by creation time.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+
+**Returns:** `{ comments: Comment[] }`
+
+---
+
+### already_add_comment
+
+Add a comment to a session. Triggers `session.commented` webhook.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+<ParamField body="content" type="string" required>
+  Comment text
+</ParamField>
+
+**Returns:** `{ comment: Comment }`
+
+---
+
+## Note tools
+
+### already_get_notes
+
+Get notes for a session. Returns Tiptap JSON content and any AI-generated notes.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+
+**Returns:** `{ notes: { content, generated_notes, updated_at } | null }`
+
+---
+
+### already_update_notes
+
+Update notes for a session. Accepts plain text (auto-wrapped in Tiptap format) or Tiptap JSON.
+
+#### Parameters
+
+<ParamField body="session_id" type="string" required>
+  The session ID
+</ParamField>
+<ParamField body="content" type="string" required>
+  Notes content as Tiptap JSON string or plain text
+</ParamField>
+
+**Returns:** `{ success: true }`

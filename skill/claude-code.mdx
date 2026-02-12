@@ -1,0 +1,123 @@
+---
+title: "Claude Code skill"
+description: "Install the /already skill for Claude Code to pull and execute work from Already sessions."
+---
+
+The `/already` skill lets Claude Code pull work from Already sessions and execute it directly in your terminal. Record a voice note, attach a screenshot, or type a task — then run `/already` and Claude handles the rest.
+
+## Prerequisites
+
+- **Claude Code** CLI installed (`npm i -g @anthropic-ai/claude-code`)
+- Already **MCP server** configured in Claude Code (see [MCP overview](/mcp/overview))
+- A **Personal API Key** (PAK) or agent API key from Already
+
+## MCP server configuration
+
+Add the Already MCP server to your Claude Code config. Put this in `~/.claude.json` or your project's `.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "already": {
+      "type": "sse",
+      "url": "https://already.so/mcp-server",
+      "headers": {
+        "Authorization": "Bearer <your-pak-or-api-key>",
+        "X-Team-Id": "<your-team-uuid>"
+      }
+    }
+  }
+}
+```
+
+Replace the key and team ID with values from your Already account settings.
+
+## Installation
+
+Copy the skill file to your Claude Code skills directory.
+
+<Tabs>
+  <Tab title="Global install">
+    Installs for all projects.
+
+    ```bash
+    mkdir -p ~/.claude/skills/already
+    curl -o ~/.claude/skills/already/SKILL.md \
+      https://already.so/skills/claude/already/SKILL.md
+    ```
+  </Tab>
+  <Tab title="Project-level install">
+    Installs for the current project only.
+
+    ```bash
+    mkdir -p .claude/skills/already
+    curl -o .claude/skills/already/SKILL.md \
+      https://already.so/skills/claude/already/SKILL.md
+    ```
+  </Tab>
+</Tabs>
+
+Restart Claude Code after installing. The `/already` command will appear in your slash-command list.
+
+## Usage
+
+Three modes depending on the arguments you pass.
+
+### List mode
+
+```
+/already list
+```
+
+Lists the 20 most recent sessions with status, priority, title, assignee, and labels. No work is performed.
+
+```
+Recent Sessions (20)
+─────────────────────
+[~] High   | Fix auth redirect bug    | @alice | bug,auth  | a1b2c3d4
+[ ] Normal | Add dark mode support    |        | feature   | e5f6g7h8
+[x] Low    | Update README            | @bob   | docs      | i9j0k1l2
+```
+
+### Auto mode
+
+```
+/already
+```
+
+Picks up the most recent `todo` session, marks it `in_progress`, reads all context (notes, comments, attachments), executes the work, then updates the status and adds a completion comment.
+
+### Specific mode
+
+```
+/already <session-id>
+```
+
+Same as auto mode but targets a specific session by its UUID. Use this after running `/already list` to pick a particular task.
+
+## Workflow
+
+What happens when the skill executes work on a session:
+
+<Steps>
+  <Step title="Fetch context">
+    Reads the session's title, description, notes (including voice transcriptions), comments, and attachment list.
+  </Step>
+  <Step title="Download attachments">
+    Screenshots, PDFs, and other files are downloaded to `/tmp` and viewed so Claude has full visual context.
+  </Step>
+  <Step title="Execute work">
+    Based on the gathered context, Claude performs the requested task (writing code, fixing bugs, creating files, etc.).
+  </Step>
+  <Step title="Update status">
+    The session is marked `done` or `needs_feedback` and a summary comment is added.
+  </Step>
+</Steps>
+
+## Examples
+
+**Fix a bug from a voice note** — Record a voice note in Already describing a bug. The session is created with your transcription in the notes. Run `/already` and Claude reads the transcription, understands the issue, fixes it, and marks the session done with a comment explaining the fix.
+
+**Work through a backlog** — Run `/already list` to see what's pending, then `/already <id>` to pick a specific task, or just `/already` repeatedly to work through todos in order.
+
+**Screenshot-driven UI changes** — Attach a screenshot to a session with annotations showing what to change. Claude downloads and views the screenshot, then implements the UI changes to match.

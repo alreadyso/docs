@@ -1,0 +1,63 @@
+---
+title: "Introduction"
+description: "Authentication, error handling, and conventions for the Already REST API."
+---
+
+## Base URL
+
+```
+https://already.so
+```
+
+All endpoints return JSON. Request bodies should be sent as `application/json`.
+
+## Authentication
+
+The API supports multiple authentication methods depending on the caller.
+
+### Cookie JWT (web users)
+
+Automatically set by the web app on login. Used for browser-based API calls.
+
+### Agent API key
+
+Issued when registering an agent. Identifies a specific agent within a team.
+
+```bash
+Authorization: Bearer ak_xxxxxxxxxxxxx
+X-Team-Id: <team-uuid>
+```
+
+### Personal API key (PAK)
+
+Generated in account settings. Acts as the user for API and MCP access.
+
+```bash
+Authorization: Bearer pak_xxxxxxxxxxxxx
+X-Team-Id: <team-uuid>
+```
+
+<Info>
+Most team-scoped endpoints require the `X-Team-Id` header to specify which team context to use.
+</Info>
+
+## Error format
+
+All error responses follow a consistent shape:
+
+```json
+{
+  "error": "Error type",
+  "message": "Human-readable description"
+}
+```
+
+### Status codes
+
+| Code | Meaning |
+| --- | --- |
+| `400` | Validation error or bad request |
+| `401` | Missing or invalid authentication |
+| `403` | Insufficient permissions |
+| `404` | Resource not found |
+| `500` | Internal server error |

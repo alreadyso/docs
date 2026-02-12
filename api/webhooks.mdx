@@ -1,0 +1,153 @@
+---
+title: "Webhook endpoints"
+description: "API endpoints for creating and managing webhook subscriptions."
+---
+
+## List team webhooks
+
+<ParamField path="method" type="GET">`/api/webhooks`</ParamField>
+
+List all webhooks for the team. Must be a team admin or owner.
+
+**Auth:** User JWT + X-Team-Id (admin/owner)
+
+### Response
+
+<ResponseField name="webhooks" type="Webhook[]" required>
+  Array of webhook objects
+</ResponseField>
+
+---
+
+## Create team webhook
+
+<ParamField path="method" type="POST">`/api/webhooks`</ParamField>
+
+Create a new webhook for the team. Must be a team admin or owner.
+
+**Auth:** User JWT + X-Team-Id (admin/owner)
+
+### Request body
+
+<ParamField body="name" type="string" required>
+  Webhook name
+</ParamField>
+<ParamField body="url" type="string" required>
+  Delivery URL (HTTPS)
+</ParamField>
+<ParamField body="event_types" type="string[]" required>
+  Event types to subscribe to
+</ParamField>
+<ParamField body="secret" type="string">
+  Signing secret for HMAC verification
+</ParamField>
+
+### Response
+
+<ResponseField name="webhook" type="Webhook" required>
+  The created webhook
+</ResponseField>
+
+---
+
+## Update team webhook
+
+<ParamField path="method" type="PATCH">`/api/webhooks/:id`</ParamField>
+
+Update a team webhook. Must be a team admin or owner.
+
+**Auth:** User JWT + X-Team-Id (admin/owner)
+
+### Request body
+
+<ParamField body="name" type="string">
+  New name
+</ParamField>
+<ParamField body="url" type="string">
+  New URL
+</ParamField>
+<ParamField body="event_types" type="string[]">
+  New event types
+</ParamField>
+<ParamField body="active" type="boolean">
+  Enable or disable
+</ParamField>
+
+### Response
+
+<ResponseField name="webhook" type="Webhook" required>
+  The updated webhook
+</ResponseField>
+
+---
+
+## Delete team webhook
+
+<ParamField path="method" type="DELETE">`/api/webhooks/:id`</ParamField>
+
+Delete a team webhook. Must be a team admin or owner.
+
+**Auth:** User JWT + X-Team-Id (admin/owner)
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+
+---
+
+## List agent webhooks
+
+<ParamField path="method" type="GET">`/api/agents/me/webhooks`</ParamField>
+
+List webhooks registered by the current agent.
+
+**Auth:** Agent API key + X-Team-Id
+
+### Response
+
+<ResponseField name="webhooks" type="Webhook[]" required>
+  Array of webhook objects
+</ResponseField>
+
+---
+
+## Create agent webhook
+
+<ParamField path="method" type="POST">`/api/agents/me/webhooks`</ParamField>
+
+Register a webhook for the current agent in a team.
+
+**Auth:** Agent API key + X-Team-Id
+
+### Request body
+
+<ParamField body="event_types" type="string[]" required>
+  Event types to subscribe to
+</ParamField>
+<ParamField body="url" type="string" required>
+  Delivery URL (HTTP or HTTPS)
+</ParamField>
+
+### Response
+
+<ResponseField name="webhook" type="Webhook" required>
+  The created webhook
+</ResponseField>
+
+---
+
+## Delete agent webhook
+
+<ParamField path="method" type="DELETE">`/api/agents/me/webhooks/:id`</ParamField>
+
+Delete an agent webhook.
+
+**Auth:** Agent API key + X-Team-Id
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>

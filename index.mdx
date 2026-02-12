@@ -1,97 +1,38 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Already docs"
+description: "Developer documentation for the Already platform — REST API, MCP tools, webhooks, session schema, and Claude Code skill."
 ---
 
-## Setting up
-
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
 <Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+  <Card title="API reference" icon="code" href="/api/introduction">
+    REST endpoints for sessions, agents, webhooks, teams, and more.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="MCP tools" icon="plug" href="/mcp/overview">
+    10 Model Context Protocol tools for AI agents to manage sessions.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Webhooks" icon="bell" href="/webhooks/overview">
+    Real-time event notifications with HMAC-signed payloads.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Session schema" icon="database" href="/schema/overview">
+    The canonical JSON schema for sessions, timeline events, and media.
+  </Card>
+  <Card title="Claude Code skill" icon="terminal" href="/skill/claude-code">
+    Pull and execute work from Already sessions with `/already`.
   </Card>
 </Columns>
 
-## Create beautiful pages
+## Authentication
 
-Everything you need to create world-class documentation.
+Already supports three authentication methods depending on the caller:
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+| Method | Prefix | Use case |
+| --- | --- | --- |
+| Cookie JWT | — | Browser-based web app calls |
+| Agent API key | `ak_` | AI agent integrations |
+| Personal API key (PAK) | `pak_` | User-scoped API and MCP access |
 
-## Need inspiration?
+Most team-scoped endpoints require the `X-Team-Id` header to specify the team context.
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Base URL
+
+All API and MCP requests use `https://already.so` as the base URL.

@@ -1,0 +1,136 @@
+---
+title: "Teams and invitations"
+description: "Create teams and manage team invitations."
+---
+
+## Create team
+
+<ParamField path="method" type="POST">`/api/teams/create`</ParamField>
+
+Create a new team. The caller becomes the team owner.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="name" type="string" required>
+  Team name
+</ParamField>
+<ParamField body="slug" type="string" required>
+  URL-safe slug (lowercase, alphanumeric, hyphens)
+</ParamField>
+
+### Response
+
+<ResponseField name="teamId" type="string" required>
+  The new team ID
+</ResponseField>
+
+---
+
+## Send invitation
+
+<ParamField path="method" type="POST">`/api/invitations/send`</ParamField>
+
+Send a team invitation by email or username. Must be a team admin or owner.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="teamId" type="string" required>
+  Team to invite to
+</ParamField>
+<ParamField body="email" type="string">
+  Invite by email
+</ParamField>
+<ParamField body="username" type="string">
+  Invite by @username
+</ParamField>
+<ParamField body="role" type="string">
+  Role to assign (default: member)
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+<ResponseField name="invitationId" type="string" required>
+  The invitation ID
+</ResponseField>
+
+---
+
+## Accept invitation
+
+<ParamField path="method" type="POST">`/api/invitations/accept`</ParamField>
+
+Accept a team invitation by ID or token.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="invitationId" type="string">
+  Invitation ID
+</ParamField>
+<ParamField body="token" type="string">
+  Invitation token
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+<ResponseField name="teamId" type="string" required>
+  The team joined
+</ResponseField>
+
+---
+
+## Reject invitation
+
+<ParamField path="method" type="POST">`/api/invitations/reject`</ParamField>
+
+Reject a team invitation.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="invitationId" type="string">
+  Invitation ID
+</ParamField>
+<ParamField body="token" type="string">
+  Invitation token
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
+
+---
+
+## Resend invitation
+
+<ParamField path="method" type="POST">`/api/invitations/resend`</ParamField>
+
+Resend a pending invitation email. Extends expiration to 7 days. Must be a team admin or owner.
+
+**Auth:** User JWT
+
+### Request body
+
+<ParamField body="invitationId" type="string" required>
+  Invitation ID to resend
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean" required>
+  Always true on success
+</ResponseField>
